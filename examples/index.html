@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>leaflet-tilelayer-geojson-vt example</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
+
+    <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet-src.js"></script>
+    <script src="geojson-vt-dev.js"></script>
+    <script src="leaflet-tilelayer-geojson-vt.js"></script>
+    <script src="jordstykke.js"></script>
+
+    <style>
+        body {
+            padding: 0;
+            margin: 0;
+        }
+        html,
+        body,
+        #map {
+            height: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="map"></div>
+
+    <script>
+        var map = L.map('map');
+
+        L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+            maxZoom: 18,
+            attribution: '&copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        /*var geojsonURL = 'http://polymaps.appspot.com/state/{z}/{x}/{y}.json';
+        var geojsonTileLayer = new L.TileLayer.GeoJSON(geojsonURL, {
+            clipTiles: true,
+            unique: function (feature) {
+                return feature.id;
+            }
+        });
+        map.addLayer(geojsonTileLayer);
+        map.setView(new L.LatLng(38.617, -100.261), 4);
+        */
+        var style = {
+            "clickable": true,
+            "color": "#00D",
+            "fillColor": "#00D",
+            "weight": 1.0,
+            "opacity": 0.3,
+            "fillOpacity": 0.2
+        };
+        var hoverStyle = {
+            "fillOpacity": 0.5
+        };
+        var datalayer = new L.TileLayer.GeoJSON(data, {
+            clipTiles: false,
+            unique: function (feature) {
+                return feature.properties.FID;
+            }
+        }, {
+            style: style,
+            onEachFeature: function (feature, layer) {
+                if (feature.properties) {
+                    var popupString = '<div class="popup">';
+                    for (var k in feature.properties) {
+                        var v = feature.properties[k];
+                        popupString += k + ': ' + v + '<br />';
+                    }
+                    popupString += '</div>';
+                    layer.bindPopup(popupString);
+                }
+                if (!(layer instanceof L.Point)) {
+                    layer.on('mouseover', function () {
+                        layer.setStyle(hoverStyle);
+                    });
+                    layer.on('mouseout', function () {
+                        layer.setStyle(style);
+                    });
+                }
+            }
+        }).addTo(map);
+        map.setView([55.8, 12], 18);
+    </script>
+</body>
+
+</html>
+
